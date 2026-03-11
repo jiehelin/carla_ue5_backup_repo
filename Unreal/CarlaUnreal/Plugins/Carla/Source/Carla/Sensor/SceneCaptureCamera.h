@@ -15,8 +15,6 @@
 
 #include "SceneCaptureCamera.generated.h"
 
-class ULumaViewHandle;
-
 /// A sensor that captures images from the scene.
 UCLASS()
 class CARLA_API ASceneCaptureCamera : public AShaderBasedSensor
@@ -44,6 +42,4 @@ protected:
   virtual void OnLastClientDisconnected() override;
 
 private:
-  UPROPERTY(Transient)
-  TObjectPtr<ULumaViewHandle> LumaViewHandle = nullptr;
 };

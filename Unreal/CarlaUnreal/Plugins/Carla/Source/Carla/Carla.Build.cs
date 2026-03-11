@@ -119,9 +119,7 @@ public class Carla :
       "PhysicsCore",
       "MeshConversion",
       "Chaos",
-      "ChaosVehicles",
-      "Niagara",
-      "LumaRuntime"
+      "ChaosVehicles"
     });
 
     PublicDependencyModuleNames.AddRange(new string[]

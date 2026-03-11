@@ -7,8 +7,6 @@
 #include "Carla/Sensor/SceneCaptureCamera.h"
 #include "Carla.h"
 #include "Carla/Game/CarlaEngine.h"
-#include "Carla/Luma/LumaMultiViewSubsystem.h"
-#include "Carla/Luma/LumaViewHandle.h"
 #include <chrono>
 
 #include <util/ue-header-guard-begin.h>
@@ -34,14 +32,6 @@ ASceneCaptureCamera::ASceneCaptureCamera(const FObjectInitializer& ObjectInitial
 void ASceneCaptureCamera::BeginPlay()
 {
   Super::BeginPlay();
-
-  if (UWorld *World = GetWorld())
-  {
-    if (ULumaMultiViewSubsystem *LumaSubsystem = World->GetSubsystem<ULumaMultiViewSubsystem>())
-    {
-      LumaViewHandle = LumaSubsystem->AcquireHandle(this);
-    }
-  }
 }
 
 void ASceneCaptureCamera::OnFirstClientConnected()
@@ -54,53 +44,12 @@ void ASceneCaptureCamera::OnLastClientDisconnected()
 
 void ASceneCaptureCamera::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
-  if (UWorld *World = GetWorld())
-  {
-    if (ULumaMultiViewSubsystem *LumaSubsystem = World->GetSubsystem<ULumaMultiViewSubsystem>())
-    {
-      LumaSubsystem->ReleaseHandle(this);
-    }
-  }
-  LumaViewHandle = nullptr;
-
   Super::EndPlay(EndPlayReason);
 }
 
 void ASceneCaptureCamera::PostPhysTick(UWorld *World, ELevelTick TickType, float DeltaSeconds)
 {
   TRACE_CPUPROFILER_EVENT_SCOPE(ASceneCaptureCamera::PostPhysTick);
-
-  if (World)
-  {
-    ULumaMultiViewSubsystem *LumaSubsystem = World->GetSubsystem<ULumaMultiViewSubsystem>();
-    if (LumaSubsystem)
-    {
-      if (!LumaViewHandle)
-      {
-        LumaViewHandle = LumaSubsystem->AcquireHandle(this);
-      }
-
-      FLumaViewState ViewState;
-      ViewState.bEnable = true;
-      if (const USceneCaptureComponent2D_CARLA *CaptureComponent = GetCaptureComponent())
-      {
-        ViewState.Origin = CaptureComponent->GetComponentLocation();
-        ViewState.Rotation = CaptureComponent->GetComponentRotation();
-        ViewState.FOV = CaptureComponent->FOVAngle;
-      }
-      else
-      {
-        ViewState.Origin = GetActorLocation();
-        ViewState.Rotation = GetActorRotation();
-        ViewState.FOV = GetFOVAngle();
-      }
-      ViewState.Width = static_cast<int32>(GetImageWidth());
-      ViewState.Height = static_cast<int32>(GetImageHeight());
-
-      LumaSubsystem->UpdateViewState(this, ViewState);
-    }
-  }
-
   Super::PostPhysTick(World, TickType, DeltaSeconds);
   
   ENQUEUE_RENDER_COMMAND(MeasureTime)
