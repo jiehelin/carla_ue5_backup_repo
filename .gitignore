@@ -24,7 +24,6 @@ Unreal/CarlaUnreal/Saved/
 
 # Local UE5 assets / plugins (keep out of git)
 Unreal/CarlaUnreal/Content/
-Unreal/CarlaUnreal/Plugins/LumaAI_2023_25_12_marketplace_5.0/
 Import/MyPackage2/
 Import/MyPackage2.json
 Import/roadpainter_decals.json
