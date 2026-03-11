@@ -1,0 +1,17 @@
+{
+   "maps": [
+      {
+         "name": "MyPackage3",
+         "xodr": "MyPackage3/MyPackage3.xodr",
+         "use_carla_materials": true,
+         "source": "MyPackage3/MyPackage3.fbx"
+      },
+      {
+         "name": "MyPackage2",
+         "xodr": "MyPackage2/MyPackage2.xodr",
+         "use_carla_materials": true,
+         "source": "MyPackage2/MyPackage2.fbx"
+      }
+   ],
+   "props": []
+}

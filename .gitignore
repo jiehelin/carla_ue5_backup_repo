@@ -1,0 +1,30 @@
+.vs/
+.vscode/
+.cache/
+__pycache__/
+
+Build/
+Install/
+Doxygen/
+Dist/
+Temp/
+out/
+
+CMakeSettings.json
+
+.clangd
+
+Help.md
+
+# Local UE5 generated data
+Unreal/CarlaUnreal/Binaries/
+Unreal/CarlaUnreal/DerivedDataCache/
+Unreal/CarlaUnreal/Intermediate/
+Unreal/CarlaUnreal/Saved/
+
+# Local UE5 assets / plugins (keep out of git)
+Unreal/CarlaUnreal/Content/
+Import/MyPackage2/
+Import/MyPackage2.json
+Import/roadpainter_decals.json
+libfoonathan_memory-0.7.3.so
