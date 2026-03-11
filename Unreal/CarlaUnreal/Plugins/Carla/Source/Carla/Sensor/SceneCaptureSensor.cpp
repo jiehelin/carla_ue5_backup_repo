@@ -12,13 +12,8 @@
 #include <util/ue-header-guard-begin.h>
 #include "Actor/ActorBlueprintFunctionLibrary.h"
 #include "Engine/PostProcessVolume.h"
-#include "GameFramework/SpectatorPawn.h"
-#include "GameFramework/PlayerController.h"
-#include "GameFramework/Pawn.h"
-#include "Kismet/GameplayStatics.h"
 #include <util/ue-header-guard-end.h>
 
-#include <mutex>
 #include <atomic>
 #include <thread>
 
@@ -33,42 +28,6 @@ namespace SceneCaptureSensor_local_ns
 {
 
   static void SetCameraDefaultOverrides(USceneCaptureComponent2D &CaptureComponent2D);
-  static std::mutex LumaCaptureMutex;
-
-  static void SyncSpectatorToCapture(ASceneCaptureSensor &Sensor)
-  {
-    UWorld *World = Sensor.GetWorld();
-    if (!World)
-    {
-      return;
-    }
-
-    APlayerController *PC = UGameplayStatics::GetPlayerController(World, 0);
-    if (!PC)
-    {
-      return;
-    }
-
-    APawn *ViewPawn = PC->GetPawn();
-    if (!ViewPawn)
-    {
-      return;
-    }
-
-    USceneCaptureComponent2D_CARLA *Capture = Sensor.GetCaptureComponent();
-    if (!Capture)
-    {
-      return;
-    }
-
-    const FTransform CameraTransform = Capture->GetComponentTransform();
-    ViewPawn->SetActorLocationAndRotation(
-        CameraTransform.GetLocation(),
-        CameraTransform.GetRotation().Rotator(),
-        false,
-        nullptr,
-        ETeleportType::TeleportPhysics);
-  }
 
   static auto GetQualitySettings(UWorld *World)
   {
@@ -978,22 +937,13 @@ void ASceneCaptureSensor::PrePhysTick(float DeltaSeconds)
       CaptureComponent2D->GetComponentLocation(),
       ImageWidth,
       ImageWidth / FMath::Tan(CaptureComponent2D->FOVAngle));
-
-  // Do NOT sync Spectator here when multiple cameras exist - each would overwrite.
-  // Spectator sync is done in PostPhysTick right before capture, so Luma 3DGS
-  // renders correctly for each camera's view (left/right/rear show 3DGS content).
 }
 
 void ASceneCaptureSensor::PostPhysTick(UWorld *World, ELevelTick TickType, float DeltaTime)
 {
   TRACE_CPUPROFILER_EVENT_SCOPE(ASceneCaptureSensor::PostPhysTick);
   Super::PostPhysTick(World, TickType, DeltaTime);
-  // Luma 3DGS uses player/editor view data. To make multi-camera captures stable,
-  // synchronize the spectator with each camera and serialize captures.
-  std::lock_guard<std::mutex> Lock(SceneCaptureSensor_local_ns::LumaCaptureMutex);
-  SceneCaptureSensor_local_ns::SyncSpectatorToCapture(*this);
   EnqueueRenderSceneImmediate();
-  FlushRenderingCommands();
 }
 
 void ASceneCaptureSensor::EndPlay(const EEndPlayReason::Type EndPlayReason)
