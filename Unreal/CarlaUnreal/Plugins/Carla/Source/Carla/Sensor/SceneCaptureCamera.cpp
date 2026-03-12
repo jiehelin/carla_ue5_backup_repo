@@ -131,31 +131,34 @@ void ASceneCaptureCamera::PostPhysTick(UWorld *World, ELevelTick TickType, float
         const FMatrix WorldToView = ViewMatrix;
         const FMatrix ViewToWorld = ViewMatrix.Inverse();
 
-        auto MatrixRowToVector4 = [](const FMatrix &Matrix, int32 RowIndex) -> FVector4
+        // Niagara HLSL side builds float4x4(...) and uses mul(M, v), which is
+        // effectively column-vector convention. Pack matrix columns so shader
+        // doesn't need per-call transpose and view-space math stays consistent.
+        auto MatrixColumnToVector4 = [](const FMatrix &Matrix, int32 ColumnIndex) -> FVector4
         {
           return FVector4(
-              static_cast<float>(Matrix.M[RowIndex][0]),
-              static_cast<float>(Matrix.M[RowIndex][1]),
-              static_cast<float>(Matrix.M[RowIndex][2]),
-              static_cast<float>(Matrix.M[RowIndex][3]));
+              static_cast<float>(Matrix.M[0][ColumnIndex]),
+              static_cast<float>(Matrix.M[1][ColumnIndex]),
+              static_cast<float>(Matrix.M[2][ColumnIndex]),
+              static_cast<float>(Matrix.M[3][ColumnIndex]));
         };
 
-        ViewState.LumaWorldToClipRow0 = MatrixRowToVector4(WorldToClip, 0);
-        ViewState.LumaWorldToClipRow1 = MatrixRowToVector4(WorldToClip, 1);
-        ViewState.LumaWorldToClipRow2 = MatrixRowToVector4(WorldToClip, 2);
-        ViewState.LumaWorldToClipRow3 = MatrixRowToVector4(WorldToClip, 3);
-        ViewState.LumaClipToWorldRow0 = MatrixRowToVector4(ClipToWorld, 0);
-        ViewState.LumaClipToWorldRow1 = MatrixRowToVector4(ClipToWorld, 1);
-        ViewState.LumaClipToWorldRow2 = MatrixRowToVector4(ClipToWorld, 2);
-        ViewState.LumaClipToWorldRow3 = MatrixRowToVector4(ClipToWorld, 3);
-        ViewState.LumaWorldToViewRow0 = MatrixRowToVector4(WorldToView, 0);
-        ViewState.LumaWorldToViewRow1 = MatrixRowToVector4(WorldToView, 1);
-        ViewState.LumaWorldToViewRow2 = MatrixRowToVector4(WorldToView, 2);
-        ViewState.LumaWorldToViewRow3 = MatrixRowToVector4(WorldToView, 3);
-        ViewState.LumaViewToWorldRow0 = MatrixRowToVector4(ViewToWorld, 0);
-        ViewState.LumaViewToWorldRow1 = MatrixRowToVector4(ViewToWorld, 1);
-        ViewState.LumaViewToWorldRow2 = MatrixRowToVector4(ViewToWorld, 2);
-        ViewState.LumaViewToWorldRow3 = MatrixRowToVector4(ViewToWorld, 3);
+        ViewState.LumaWorldToClipRow0 = MatrixColumnToVector4(WorldToClip, 0);
+        ViewState.LumaWorldToClipRow1 = MatrixColumnToVector4(WorldToClip, 1);
+        ViewState.LumaWorldToClipRow2 = MatrixColumnToVector4(WorldToClip, 2);
+        ViewState.LumaWorldToClipRow3 = MatrixColumnToVector4(WorldToClip, 3);
+        ViewState.LumaClipToWorldRow0 = MatrixColumnToVector4(ClipToWorld, 0);
+        ViewState.LumaClipToWorldRow1 = MatrixColumnToVector4(ClipToWorld, 1);
+        ViewState.LumaClipToWorldRow2 = MatrixColumnToVector4(ClipToWorld, 2);
+        ViewState.LumaClipToWorldRow3 = MatrixColumnToVector4(ClipToWorld, 3);
+        ViewState.LumaWorldToViewRow0 = MatrixColumnToVector4(WorldToView, 0);
+        ViewState.LumaWorldToViewRow1 = MatrixColumnToVector4(WorldToView, 1);
+        ViewState.LumaWorldToViewRow2 = MatrixColumnToVector4(WorldToView, 2);
+        ViewState.LumaWorldToViewRow3 = MatrixColumnToVector4(WorldToView, 3);
+        ViewState.LumaViewToWorldRow0 = MatrixColumnToVector4(ViewToWorld, 0);
+        ViewState.LumaViewToWorldRow1 = MatrixColumnToVector4(ViewToWorld, 1);
+        ViewState.LumaViewToWorldRow2 = MatrixColumnToVector4(ViewToWorld, 2);
+        ViewState.LumaViewToWorldRow3 = MatrixColumnToVector4(ViewToWorld, 3);
       }
       else
       {
