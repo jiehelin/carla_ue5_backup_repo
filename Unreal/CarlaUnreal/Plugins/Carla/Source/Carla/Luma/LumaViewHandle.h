@@ -40,6 +40,54 @@ struct FLumaViewState
 
   UPROPERTY()
   int32 Height = 600;
+
+  UPROPERTY()
+  FVector4 LumaWorldToClipRow0 = FVector4(1.f, 0.f, 0.f, 0.f);
+
+  UPROPERTY()
+  FVector4 LumaWorldToClipRow1 = FVector4(0.f, 1.f, 0.f, 0.f);
+
+  UPROPERTY()
+  FVector4 LumaWorldToClipRow2 = FVector4(0.f, 0.f, 1.f, 0.f);
+
+  UPROPERTY()
+  FVector4 LumaWorldToClipRow3 = FVector4(0.f, 0.f, 0.f, 1.f);
+
+  UPROPERTY()
+  FVector4 LumaClipToWorldRow0 = FVector4(1.f, 0.f, 0.f, 0.f);
+
+  UPROPERTY()
+  FVector4 LumaClipToWorldRow1 = FVector4(0.f, 1.f, 0.f, 0.f);
+
+  UPROPERTY()
+  FVector4 LumaClipToWorldRow2 = FVector4(0.f, 0.f, 1.f, 0.f);
+
+  UPROPERTY()
+  FVector4 LumaClipToWorldRow3 = FVector4(0.f, 0.f, 0.f, 1.f);
+
+  UPROPERTY()
+  FVector4 LumaWorldToViewRow0 = FVector4(1.f, 0.f, 0.f, 0.f);
+
+  UPROPERTY()
+  FVector4 LumaWorldToViewRow1 = FVector4(0.f, 1.f, 0.f, 0.f);
+
+  UPROPERTY()
+  FVector4 LumaWorldToViewRow2 = FVector4(0.f, 0.f, 1.f, 0.f);
+
+  UPROPERTY()
+  FVector4 LumaWorldToViewRow3 = FVector4(0.f, 0.f, 0.f, 1.f);
+
+  UPROPERTY()
+  FVector4 LumaViewToWorldRow0 = FVector4(1.f, 0.f, 0.f, 0.f);
+
+  UPROPERTY()
+  FVector4 LumaViewToWorldRow1 = FVector4(0.f, 1.f, 0.f, 0.f);
+
+  UPROPERTY()
+  FVector4 LumaViewToWorldRow2 = FVector4(0.f, 0.f, 1.f, 0.f);
+
+  UPROPERTY()
+  FVector4 LumaViewToWorldRow3 = FVector4(0.f, 0.f, 0.f, 1.f);
 };
 
 UCLASS()
